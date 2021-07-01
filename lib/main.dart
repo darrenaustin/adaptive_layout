@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'adaptive/adaptive_scaffold.dart';
+import 'adaptive_scaffold.dart';
 // import 'breakpoint/adaptive_scaffold.dart';
 import 'app_state.dart';
 import 'featured_items.dart';

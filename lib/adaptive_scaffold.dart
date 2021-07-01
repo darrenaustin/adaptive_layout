@@ -2,7 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-import '../nav_destination.dart';
+import 'nav_destination.dart';
 import 'breakpoint_layout.dart';
 
 enum _NavigationUIType { bottomBar, rail_extended, rail }

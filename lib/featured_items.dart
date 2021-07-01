@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'adaptive/breakpoint_layout.dart';
+import 'breakpoint_layout.dart';
 
 class FeaturedItems extends StatelessWidget {
   const FeaturedItems({Key? key}) : super(key: key);

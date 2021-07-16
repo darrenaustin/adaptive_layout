@@ -2,8 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'adaptive_scaffold.dart';
-// import 'breakpoint/adaptive_scaffold.dart';
 import 'app_state.dart';
+import 'breakpoint.dart';
+import 'breakpoints.dart';
 import 'featured_items.dart';
 import 'nav_destination.dart';
 
@@ -32,8 +33,18 @@ class AdaptiveApp extends StatelessWidget {
           'rooms': (BuildContext context) => ExamplePage(title: 'Rooms'),
           'meet': (BuildContext context) => ExamplePage(title: 'Meet'),
         },
-        initialRoute: _navDestinations[0].route,
         debugShowCheckedModeBanner: false,
+        initialRoute: _navDestinations[0].route,
+        builder: (BuildContext context, Widget? child) {
+          return BreakpointLayout<Breakpoint>(
+            breakpoints: const <Breakpoint>[
+              MobilePortraitBreakpoint(),
+              DesktopSmallBreakpoint(),
+              DesktopLargeBreakpoint(),
+            ],
+            child: child!,
+          );
+        },
       ),
     );
   }
@@ -84,14 +95,17 @@ class ContentPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final AppState app = App.of(context);
     return AdaptiveScaffold(
-      navigationDestinations: app.showNavigation ? _navDestinations : null,
-      selectedDestination: app.currentDestinationIndex,
-      onDestinationSelected: (int index) => app.navigateTo(context, index),
+      showNavigation: app.showNavigation,
+      destinations: app.destinations,
+      selectedDestination: app.selectedDestination,
+      onDestinationSelected: (NavigationDestination destination) {
+        app.navigateTo(context, destination);
+      },
       appBar: AppBar(
         title: Text(title),
         actions: [
           IconButton(
-            icon: Icon(Icons.settings),
+            icon: Icon(Icons.navigation_rounded),
             onPressed: () => app.showNavigation = !app.showNavigation,
           ),
         ],
@@ -100,7 +114,6 @@ class ContentPage extends StatelessWidget {
     );
   }
 }
-
 
 const List<NavigationDestination> _navDestinations = const <NavigationDestination>[
   NavigationDestination(label: 'Featured', icon: Icons.featured_video, route: 'featured'),

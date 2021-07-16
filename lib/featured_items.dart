@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
 
-import 'breakpoint_layout.dart';
+import 'breakpoint.dart';
+import 'breakpoints.dart';
 
 class FeaturedItems extends StatelessWidget {
   const FeaturedItems({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return BreakpointLayoutBuilder(
-      breakpoints: <BreakpointLayout>[
-        BreakpointLayout(560, (BuildContext context, BoxConstraints constraints) => ItemList(items: allItems)),
-        BreakpointLayout(double.infinity, (BuildContext context, BoxConstraints constraints) => ItemGrid(items: allItems)),
-      ],
-    );
+    final Breakpoint breakpoint = BreakpointLayout.breakpointFor(context);
+    switch (breakpoint) {
+      case const DesktopLargeBreakpoint():
+        return ItemGrid(items: allItems);
+
+      default:
+        return ItemList(items: allItems);
+    }
   }
 }
 

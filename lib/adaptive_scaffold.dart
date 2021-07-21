@@ -26,53 +26,70 @@ class AdaptiveScaffold extends StatefulWidget {
   _AdaptiveScaffoldState createState() => _AdaptiveScaffoldState();
 }
 
-class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
-
-  @override
-  void didUpdateWidget(AdaptiveScaffold oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.showNavigation != widget.showNavigation) {
-      setState(() {
-      });
-    }
-  }
+class _AdaptiveScaffoldState extends State<AdaptiveScaffold> with SingleTickerProviderStateMixin {
 
   Widget _buildWithNav(BuildContext context) {
-    BottomNavigationBar? bottomNavigationBar;
-    NavigationRail? navigationRail;
-
+    late bool showNavRail;
     final Breakpoint breakpoint = BreakpointLayout.breakpointFor(context);
-    final int selectedIndex = widget.destinations.indexOf(widget.selectedDestination);
     switch (breakpoint) {
       case DesktopSmallBreakpoint():
-        bottomNavigationBar = BottomNavigationBar(
-            items: widget.destinations.map(NavigationDestination.toBottomNavItem).toList(),
-            currentIndex: selectedIndex,
-            onTap: (int index) {
-              widget.onDestinationSelected(widget.destinations[index]);
-            }
-        );
+        showNavRail = false;
         break;
       case DesktopLargeBreakpoint():
-        navigationRail = NavigationRail(
-          destinations: widget.destinations.map(NavigationDestination.toRailDestination).toList(),
-          selectedIndex: selectedIndex,
-          onDestinationSelected: (int index) {
-            widget.onDestinationSelected(widget.destinations[index]);
-          },
-        );
+        showNavRail = true;
         break;
     }
+
+    final double railWidth = 72;
+    final double bottomNavHeight = kBottomNavigationBarHeight;
+    final int selectedIndex = widget.destinations.indexOf(widget.selectedDestination);
 
     return Scaffold(
       appBar: widget.appBar,
       body: Row(
         children: [
-          if (navigationRail != null) navigationRail,
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeInOut,
+            width: showNavRail ? railWidth : 0,
+            child: ClipRect(
+              child: OverflowBox(
+                alignment: Alignment.centerRight,
+                minWidth: railWidth,
+                maxWidth: railWidth,
+                child: NavigationRail(
+                  destinations: widget.destinations.map(NavigationDestination.toRailDestination).toList(),
+                  selectedIndex: selectedIndex,
+                  onDestinationSelected: (int index) {
+                    widget.onDestinationSelected(widget.destinations[index]);
+                  },
+                ),
+              ),
+            ),
+          ),
           Expanded(child: widget.body),
         ],
       ),
-      bottomNavigationBar: bottomNavigationBar,
+      bottomNavigationBar: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeInOut,
+        height: showNavRail ? 0 : bottomNavHeight,
+        child: ClipRect(
+          child: OverflowBox(
+            alignment: Alignment.topCenter,
+            minHeight: bottomNavHeight,
+            maxHeight: bottomNavHeight,
+            child: BottomNavigationBar(
+              items: widget.destinations.map(NavigationDestination.toBottomNavItem).toList(),
+              currentIndex: selectedIndex,
+              showUnselectedLabels: true,
+              onTap: (int index) {
+                widget.onDestinationSelected(widget.destinations[index]);
+              },
+            ),
+          ),
+        ),
+      ),
     );
   }
 

@@ -105,7 +105,7 @@ class ContentPage extends StatelessWidget {
         title: Text(title),
         actions: [
           IconButton(
-            icon: Icon(Icons.navigation_rounded),
+            icon: Icon(Icons.settings),
             onPressed: () => app.showNavigation = !app.showNavigation,
           ),
         ],

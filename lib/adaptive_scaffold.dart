@@ -49,7 +49,7 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> with SingleTickerPr
       body: Row(
         children: [
           AnimatedContainer(
-            duration: const Duration(milliseconds: 250),
+            duration: const Duration(milliseconds: 300),
             curve: Curves.easeInOut,
             width: showNavRail ? railWidth : 0,
             child: ClipRect(
@@ -71,7 +71,7 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> with SingleTickerPr
         ],
       ),
       bottomNavigationBar: AnimatedContainer(
-        duration: const Duration(milliseconds: 250),
+        duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
         height: showNavRail ? 0 : bottomNavHeight,
         child: ClipRect(
@@ -86,6 +86,8 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> with SingleTickerPr
               onTap: (int index) {
                 widget.onDestinationSelected(widget.destinations[index]);
               },
+              landscapeLayout: BottomNavigationBarLandscapeLayout.centered,
+              type: BottomNavigationBarType.fixed,
             ),
           ),
         ),

@@ -3,19 +3,46 @@ import 'package:flutter/material.dart';
 import 'breakpoint.dart';
 import 'breakpoints.dart';
 
-class FeaturedItems extends StatelessWidget {
+class FeaturedItems extends StatefulWidget {
   const FeaturedItems({Key? key}) : super(key: key);
 
   @override
+  State<FeaturedItems> createState() => _FeaturedItemsState();
+}
+
+class _FeaturedItemsState extends State<FeaturedItems> {
+
+
+
+  @override
   Widget build(BuildContext context) {
+    late bool showGridView;
     final Breakpoint breakpoint = BreakpointLayout.breakpointFor(context);
     switch (breakpoint) {
-      case const DesktopLargeBreakpoint():
-        return ItemGrid(items: allItems);
-
-      default:
-        return ItemList(items: allItems);
+      case DesktopSmallBreakpoint():
+        showGridView = false;
+        break;
+      case DesktopLargeBreakpoint():
+        showGridView = true;
+        break;
     }
+
+    return Stack(
+      children: [
+        AnimatedOpacity(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          opacity: showGridView ? 0 : 1.0,
+          child: ItemList(items: allItems),
+        ),
+        AnimatedOpacity(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          opacity: showGridView ? 1.0 : 0,
+          child: ItemGrid(items: allItems),
+        ),
+      ],
+    );
   }
 }
 

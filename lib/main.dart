@@ -64,7 +64,7 @@ class ExamplePage extends StatelessWidget {
           final Size windowSize = MediaQuery.of(context).size;
           final double bodyWidth = constraints.biggest.width;
           return Container(
-            color: Colors.white,
+            color: Colors.grey[300],
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,

@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -10,6 +12,59 @@ import 'nav_destination.dart';
 
 void main() {
   runApp(AdaptiveApp());
+}
+
+// For the desktop breakpoints (not mobile):
+// width < 192, horizontal margins = MAX(0, (width - 96) / 2)
+// 192 <= width < 840, horizontal margins = 48
+// 840 <= width < 1240, horizontal margins = (width - 840) / 2
+// width >= 1240, horizontal margins = 200
+// Based on https://carbon.googleplex.com/google-material/pages/tablet-laptop-adaptation/undefined#2d0cbc75-d041-43aa-a4ce-e5463dc1bc43
+//
+// The first constraint isn't given in the spec. I'm just assuming that once the body's width is
+// less than the margins, the margins should get smaller (until they are 0).
+
+class ResponsiveBody extends StatelessWidget {
+  const ResponsiveBody({ Key? key, this.child }) : super(key: key);
+
+  final Widget? child;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        final Breakpoint breakpoint = BreakpointLayout.breakpointFor(context);
+        final double width = constraints.maxWidth;
+
+        // I think it would be nicer to have written this as:
+        // if (breakpoint.isDesktop) ...
+
+        late final double dx;
+        switch (breakpoint) {
+          case DesktopSmallBreakpoint():
+          case DesktopLargeBreakpoint():
+            if (width < 192) {
+              dx = math.max(0, (width - 96) / 2);
+            } else if (width < 840) {
+              dx = 48;
+            } else if (width < 1240) {
+              dx = (width - 840) / 2;
+            } else {
+              dx = 200;
+            }
+            break;
+          default:
+            dx = 0;
+            break;
+        }
+
+        return Padding(
+          padding: EdgeInsets.symmetric(horizontal: dx),
+          child: child,
+        );
+      }
+    );
+  }
 }
 
 class AdaptiveApp extends StatelessWidget {
@@ -110,7 +165,7 @@ class ContentPage extends StatelessWidget {
           ),
         ],
       ),
-      body: content,
+      body: ResponsiveBody(child: content),
     );
   }
 }

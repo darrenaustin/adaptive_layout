@@ -31,7 +31,7 @@ class DesktopSmallBreakpoint extends Breakpoint {
       case TargetPlatform.fuchsia:
       case TargetPlatform.linux:
       case TargetPlatform.windows:
-        return constraints.biggest.width < 840;
+        return constraints.maxWidth < 840;
     }
   }
 }
@@ -48,7 +48,7 @@ class DesktopLargeBreakpoint extends Breakpoint {
       case TargetPlatform.fuchsia:
       case TargetPlatform.linux:
       case TargetPlatform.windows:
-        return constraints.biggest.width >= 840;
+        return constraints.maxWidth >= 840;
     }
   }
 }

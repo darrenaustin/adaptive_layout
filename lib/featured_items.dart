@@ -12,8 +12,6 @@ class FeaturedItems extends StatefulWidget {
 
 class _FeaturedItemsState extends State<FeaturedItems> {
 
-
-
   @override
   Widget build(BuildContext context) {
     late bool showGridView;
@@ -27,21 +25,24 @@ class _FeaturedItemsState extends State<FeaturedItems> {
         break;
     }
 
-    return Stack(
-      children: [
-        AnimatedOpacity(
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-          opacity: showGridView ? 0 : 1.0,
-          child: ItemList(items: allItems),
-        ),
-        AnimatedOpacity(
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-          opacity: showGridView ? 1.0 : 0,
-          child: ItemGrid(items: allItems),
-        ),
-      ],
+    return Container(
+      color: Colors.white,
+      child: Stack(
+        children: [
+          AnimatedOpacity(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            opacity: showGridView ? 0 : 1.0,
+            child: const ItemList(items: allItems),
+          ),
+          AnimatedOpacity(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            opacity: showGridView ? 1.0 : 0,
+            child: const ItemGrid(items: allItems),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -79,19 +80,19 @@ class ItemListTile extends StatelessWidget {
           SizedBox(
             width: 70,
             height: 70,
-            child: Placeholder(),
+            child: Image.asset('assets/${item.imageAssetName}.png'),
           ),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(item.name, style: Theme.of(context).textTheme.bodyText1),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Text(item.tags, style: Theme.of(context).textTheme.caption),
               Text(item.weight, style: Theme.of(context).textTheme.caption),
             ],
           ),
-          Spacer(),
+          const Spacer(),
           Text(item.price, style: Theme.of(context).textTheme.bodyText1),
         ],
       ),
@@ -146,7 +147,7 @@ class ItemCard extends StatelessWidget {
               aspectRatio: 1 / 1,
               // width: cardSize.width,
               // height: cardSize.width,
-              child: Placeholder(),
+              child: Image.asset('assets/${item.imageAssetName}.png'),
             ),
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -160,10 +161,10 @@ class ItemCard extends StatelessWidget {
                       Text(item.price, style: Theme.of(context).textTheme.bodyText1),
                     ],
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(item.tags, style: Theme.of(context).textTheme.caption, overflow: TextOverflow.ellipsis),
                   Text(item.weight, style: Theme.of(context).textTheme.caption),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () {},
                     child: const Text('Add to cart'),
@@ -195,14 +196,13 @@ class Item {
 }
 
 const List<Item> allItems = [
-  Item(name: 'Honeydew melon', imageAssetName: 'honeydew', price: '\$4.99', tags: 'Honeydew Fresh Organic', weight: '4.25 lb'),
+  Item(name: 'Honeydew melon', imageAssetName: 'melon', price: '\$4.99', tags: 'Honeydew Fresh Organic', weight: '4.25 lb'),
   Item(name: 'Sourdough loaf', imageAssetName: 'sourdough', price: '\$8.99', tags: 'Artisanal Bread Sourdough', weight: '15 lb'),
-  Item(name: 'Red onion', imageAssetName: 'onion', price: '\$3.49', tags: 'Produce Onion Organic', weight: '1 lb'),
-  Item(name: 'Honeydew melon', imageAssetName: 'honeydew', price: '\$4.99', tags: 'Honeydew Fresh Organic', weight: '4.25 lb'),
+  Item(name: 'Red onion', imageAssetName: 'red-onion', price: '\$3.49', tags: 'Produce Onion Organic', weight: '1 lb'),
+  Item(name: 'Honeydew melon', imageAssetName: 'melon', price: '\$4.99', tags: 'Honeydew Fresh Organic', weight: '4.25 lb'),
   Item(name: 'Sourdough loaf', imageAssetName: 'sourdough', price: '\$8.99', tags: 'Artisanal Bread Sourdough', weight: '15 lb'),
-  Item(name: 'Red onion', imageAssetName: 'onion', price: '\$3.49', tags: 'Produce Onion Organic', weight: '1 lb'),
-  Item(name: 'Honeydew melon', imageAssetName: 'honeydew', price: '\$4.99', tags: 'Honeydew Fresh Organic', weight: '4.25 lb'),
+  Item(name: 'Red onion', imageAssetName: 'red-onion', price: '\$3.49', tags: 'Produce Onion Organic', weight: '1 lb'),
+  Item(name: 'Honeydew melon', imageAssetName: 'melon', price: '\$4.99', tags: 'Honeydew Fresh Organic', weight: '4.25 lb'),
   Item(name: 'Sourdough loaf', imageAssetName: 'sourdough', price: '\$8.99', tags: 'Artisanal Bread Sourdough', weight: '15 lb'),
-  Item(name: 'Red onion', imageAssetName: 'onion', price: '\$3.49', tags: 'Produce Onion Organic', weight: '1 lb'),
+  Item(name: 'Red onion', imageAssetName: 'red-onion', price: '\$3.49', tags: 'Produce Onion Organic', weight: '1 lb'),
 ];
-

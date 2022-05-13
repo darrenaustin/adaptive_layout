@@ -1,6 +1,5 @@
 import 'dart:math' as math;
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'adaptive_scaffold.dart';
@@ -8,10 +7,10 @@ import 'app_state.dart';
 import 'breakpoint.dart';
 import 'breakpoints.dart';
 import 'featured_items.dart';
-import 'nav_destination.dart';
+// import 'nav_destination.dart';
 
 void main() {
-  runApp(AdaptiveApp());
+  runApp(const AdaptiveApp());
 }
 
 // For the desktop breakpoints (not mobile):
@@ -34,32 +33,69 @@ class ResponsiveBody extends StatelessWidget {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         final Breakpoint breakpoint = BreakpointLayout.breakpointFor(context);
+        final bool navRailShowing = AdaptiveScaffold.featuresFor(context).contains(AdaptiveScaffoldFeature.navigationRail);
         final double width = constraints.maxWidth;
 
-        // I think it would be nicer to have written this as:
-        // if (breakpoint.isDesktop) ...
-
-        late final double dx;
-        switch (breakpoint) {
-          case DesktopSmallBreakpoint():
-          case DesktopLargeBreakpoint():
-            if (width < 192) {
-              dx = math.max(0, (width - 96) / 2);
-            } else if (width < 840) {
-              dx = 48;
-            } else if (width < 1240) {
-              dx = (width - 840) / 2;
-            } else {
-              dx = 200;
-            }
-            break;
-          default:
-            dx = 0;
-            break;
+        final double startMargin;
+        final double endMargin;
+        if (navRailShowing) {
+          // I think it would be nicer to have written this as:
+          // if (breakpoint.isDesktop) ...
+          switch (breakpoint) {
+            case DesktopSmallBreakpoint():
+            case DesktopLargeBreakpoint():
+              if (width < 192) {
+                // Split the available space evenly for the margins.
+                startMargin = math.max(0, (width - 96) / 2);
+                endMargin = startMargin;
+              } else if (width < (840 + 48 + 48)) {
+                // Fixed margins with responsive body.
+                startMargin = 48;
+                endMargin = 48;
+              } else if (width < (840 + 48 + 200)) {
+                // Body fixed to 840, with a static 48 starting margin with the
+                // rest put in the end margin.
+                startMargin = 48;
+                endMargin = width - 840 - startMargin;
+              } else {
+                // Fixed margins with responsive body.
+                startMargin = 48;
+                endMargin = 200;
+              }
+              break;
+            default:
+              startMargin = 0;
+              endMargin = 0;
+              break;
+          }
+        } else {
+          // I think it would be nicer to have written this as:
+          // if (breakpoint.isDesktop) ...
+          switch (breakpoint) {
+            case DesktopSmallBreakpoint():
+            case DesktopLargeBreakpoint():
+              if (width < 192) {
+                startMargin = math.max(0, (width - 96) / 2);
+              } else if (width < 840) {
+                startMargin = 48;
+              } else if (width < 840 + 2 * 48) {
+                startMargin = 48;
+              } else if (width < 1240) {
+                startMargin = (width - 840) / 2;
+              } else {
+                startMargin = 200;
+              }
+              break;
+            default:
+              startMargin = 0;
+              break;
+          }
+          endMargin = startMargin;
         }
 
         return Padding(
-          padding: EdgeInsets.symmetric(horizontal: dx),
+          // TODO(darrenaustin): handle RTL direction
+          padding: EdgeInsets.only(left: startMargin, right: endMargin),
           child: child,
         );
       }
@@ -67,14 +103,36 @@ class ResponsiveBody extends StatelessWidget {
   }
 }
 
+class NoPageTransitionsBuilder extends PageTransitionsBuilder {
+  /// Constructs a page transition animation that slides the page up.
+  const NoPageTransitionsBuilder();
+
+  @override
+  Widget buildTransitions<T>(
+      PageRoute<T>? route,
+      BuildContext? context,
+      Animation<double> animation,
+      Animation<double>? secondaryAnimation,
+      Widget child,
+  ) {
+    return child;
+  }
+}
+
 class AdaptiveApp extends StatelessWidget {
+  const AdaptiveApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    final colorScheme = const ColorScheme.light();
-    final theme = ThemeData.from(colorScheme: colorScheme).copyWith(
-      bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        selectedItemColor: colorScheme.primary,
-        unselectedItemColor: colorScheme.onBackground,
+    const colorScheme = ColorScheme.light();
+    final theme = ThemeData(
+      colorSchemeSeed: const Color(0xff460bec),
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: <TargetPlatform, PageTransitionsBuilder>{
+          TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+          TargetPlatform.macOS: NoPageTransitionsBuilder(),
+        },
       ),
     );
     return App(
@@ -83,13 +141,13 @@ class AdaptiveApp extends StatelessWidget {
         title: 'Adaptive Layout Demo',
         theme: theme,
         routes: {
-          'featured': (BuildContext context) => ContentPage(title: 'Featured', content: FeaturedItems()),
-          'chat': (BuildContext context) => ExamplePage(title: 'Chat'),
-          'rooms': (BuildContext context) => ExamplePage(title: 'Rooms'),
-          'meet': (BuildContext context) => ExamplePage(title: 'Meet'),
+          'Featured': (BuildContext context) => const ContentPage(title: 'Featured', content: FeaturedItems()),
+          'Chat': (BuildContext context) => const ExamplePage(title: 'Chat'),
+          'Rooms': (BuildContext context) => const ExamplePage(title: 'Rooms'),
+          'Meet': (BuildContext context) => const ExamplePage(title: 'Meet'),
         },
         debugShowCheckedModeBanner: false,
-        initialRoute: _navDestinations[0].route,
+        initialRoute: 'Featured',
         builder: (BuildContext context, Widget? child) {
           return BreakpointLayout<Breakpoint>(
             breakpoints: const <Breakpoint>[
@@ -106,7 +164,7 @@ class AdaptiveApp extends StatelessWidget {
 }
 
 class ExamplePage extends StatelessWidget {
-  ExamplePage({Key? key, required this.title}) : super(key: key);
+  const ExamplePage({super.key, required this.title});
 
   final String title;
 
@@ -119,7 +177,14 @@ class ExamplePage extends StatelessWidget {
           final Size windowSize = MediaQuery.of(context).size;
           final double bodyWidth = constraints.biggest.width;
           return Container(
-            color: Colors.grey[300],
+            // color: Colors.grey[300],
+            decoration: BoxDecoration(
+              color: Colors.grey[300], // white,
+              border: Border.all(
+                color: Colors.black,
+                width: 1,
+              ),
+            ),
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -137,11 +202,11 @@ class ExamplePage extends StatelessWidget {
 }
 
 class ContentPage extends StatelessWidget {
-  ContentPage({
-    Key? key,
+  const ContentPage({
+    super.key,
     required this.title,
     required this.content,
-  }) : super(key: key);
+  });
 
   final String title;
   final Widget content;
@@ -160,7 +225,7 @@ class ContentPage extends StatelessWidget {
         title: Text(title),
         actions: [
           IconButton(
-            icon: Icon(Icons.settings),
+            icon: const Icon(Icons.settings),
             onPressed: () => app.showNavigation = !app.showNavigation,
           ),
         ],
@@ -170,9 +235,9 @@ class ContentPage extends StatelessWidget {
   }
 }
 
-const List<NavigationDestination> _navDestinations = const <NavigationDestination>[
-  NavigationDestination(label: 'Featured', icon: Icons.featured_video, route: 'featured'),
-  NavigationDestination(label: 'Chat', icon: Icons.chat_bubble_outline, route: 'chat'),
-  NavigationDestination(label: 'Rooms', icon: Icons.room, route: 'rooms'),
-  NavigationDestination(label: 'Meet', icon: Icons.video_call_outlined, route: 'meet'),
+const List<NavigationDestination> _navDestinations = <NavigationDestination>[
+  NavigationDestination(label: 'Featured', icon: Icon(Icons.featured_video)),
+  NavigationDestination(label: 'Chat', icon: Icon(Icons.chat_bubble_outline)),
+  NavigationDestination(label: 'Rooms', icon: Icon(Icons.room)),
+  NavigationDestination(label: 'Meet', icon: Icon(Icons.video_call_outlined)),
 ];

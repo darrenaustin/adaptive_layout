@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'nav_destination.dart';
-
 class App extends StatefulWidget {
 
   const App({
@@ -35,7 +33,7 @@ class AppState extends State<App> {
   NavigationDestination get selectedDestination => _selectedDestination;
   void navigateTo(BuildContext context, NavigationDestination destination) {
     _selectedDestination = destination;
-    Navigator.of(context).pushNamed(destination.route);
+    Navigator.of(context).pushNamed(destination.label);
   }
 
   @override
